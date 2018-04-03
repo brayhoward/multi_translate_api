@@ -1,4 +1,4 @@
-defmodule MultiTranslateApi.UserView do
+defmodule MultiTranslateApiWeb.TranslationView do
   use MultiTranslateApiWeb, :view
 
   def render("translations.json", %{translations: translations}) do

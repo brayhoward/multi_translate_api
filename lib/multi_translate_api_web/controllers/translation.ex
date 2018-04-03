@@ -1,4 +1,4 @@
-defmodule MultiTranslateApi.TranslateController do
+defmodule MultiTranslateApiWeb.TranslationController do
   use MultiTranslateApiWeb, :controller
 
   import SweetXml
@@ -27,22 +27,21 @@ defmodule MultiTranslateApi.TranslateController do
     "pl" => "Polish",
     "nl" => "Dutch"
   }
+  @iso_keys Map.keys(@iso_table)
 
-  def translate(conn, %{text: text}) do
-    translations = translate(text)
-
-    # conn
-    # |> render("translations.json", %{translations: translations})
-
-    translations
+  def translate(conn, %{"text" => text}) do
+    conn
+    |> render(
+      "translations.json",
+      %{translations: translate(text)}
+    )
   end
 
   #################
   ##   Private   ##
   #################
   def translate(text) do
-    @iso_table
-    |> Map.keys()
+    @iso_keys
     |> Task.async_stream(
       fn(isoCode) ->
         translate(text, isoCode)
@@ -68,7 +67,7 @@ defmodule MultiTranslateApi.TranslateController do
   def build_translation(translated_text, isoCode) do
     lang = @iso_table |> Map.get(isoCode)
 
-    %{translation: translated_text, language: lang}
+    %{text: translated_text, language: lang}
   end
 
   def parse_resp_body("<html>" <> _rest) do
