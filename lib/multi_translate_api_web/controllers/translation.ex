@@ -37,6 +37,10 @@ defmodule MultiTranslateApiWeb.TranslationController do
     )
   end
 
+  def iso_codes(conn, _params) do
+    conn |> json(@iso_keys)
+  end
+
   #################
   ##   Private   ##
   #################

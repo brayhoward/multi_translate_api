@@ -9,5 +9,6 @@ defmodule MultiTranslateApiWeb.Router do
     pipe_through :api
 
     get "/translate/:text", TranslationController, :translate
+    get "/iso-codes", TranslationController, :iso_codes
   end
 end
