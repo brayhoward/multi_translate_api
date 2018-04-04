@@ -3,6 +3,14 @@ defmodule Translator.Worker do
 
   alias Translator.Fetcher
 
+  @call_timeout (
+    if Mix.env() == :dev do
+      60 * 1_000
+    else
+      5_000
+    end
+  )
+
   ###########################################################
   ##                      PUBLIC API                       ##
   ###########################################################
@@ -12,7 +20,7 @@ defmodule Translator.Worker do
       iso_codes_length: length(iso_codes),
       translations: []
     }
-    :ok = GenServer.call(__MODULE__, {:set_state, initial_state})
+    :ok = GenServer.call(__MODULE__, {:set_state, initial_state}, @call_timeout)
 
     iso_codes
     |> Enum.each(&(GenServer.cast(__MODULE__, {:get_translation, &1})))
@@ -49,5 +57,5 @@ defmodule Translator.Worker do
     end
   end
 
-  defp get_state(), do: GenServer.call(__MODULE__, :get_state)
+  defp get_state(), do: GenServer.call(__MODULE__, :get_state, @call_timeout)
 end
