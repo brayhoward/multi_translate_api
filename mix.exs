@@ -37,7 +37,8 @@ defmodule MultiTranslateApi.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:httpoison, "~> 1.0"},
-      {:sweet_xml, "~> 0.6.5"}
+      {:sweet_xml, "~> 0.6.5"},
+      {:jason, "~> 1.0"}
     ]
   end
 end

@@ -11,7 +11,7 @@ defmodule MultiTranslateApi.Application do
       # Start the endpoint when the application starts
       supervisor(MultiTranslateApiWeb.Endpoint, []),
       # Start your own worker by calling: MultiTranslateApi.Worker.start_link(arg1, arg2, arg3)
-      # worker(MultiTranslateApi.Worker, [arg1, arg2, arg3]),
+      worker(Translator.Worker, [], restart: :permanent),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
