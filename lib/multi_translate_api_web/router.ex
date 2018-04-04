@@ -8,7 +8,10 @@ defmodule MultiTranslateApiWeb.Router do
   scope "/api", MultiTranslateApiWeb do
     pipe_through :api
 
-    get "/translate/:text", TranslationController, :translate
+    # /translate endpoint is looking for query 2 params. iso_codes param is optional
+    # 1. text -> the string you want to translate
+    # 2. iso_codes -> a json string array of iso_code strings. ex: "[\"ex\", \"ja\", \"zh\"]"
+    get "/translate", TranslationController, :translate
     get "/iso-codes", TranslationController, :iso_codes
   end
 end
