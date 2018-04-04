@@ -29,8 +29,24 @@ defmodule Translator.Fetcher do
 
   def iso_codes, do: @iso_codes
 
-  def fetch_translation(text, isoCode) do
-    build_query_url(text, isoCode)
+  def fetch_translations(text, iso_codes) do
+    iso_codes
+    |> Task.async_stream(
+      fn(isoCode) ->
+        fetch_translation(text, isoCode)
+      end,
+      ordered: false
+    )
+    |> Stream.map(
+      fn({_ok, translation}) ->
+        translation
+      end
+    )
+    |> Enum.to_list()
+  end
+
+  def fetch_translation(text, iso_code) do
+    build_query_url(text, iso_code)
     |> HTTPoison.get!([
       {"Ocp-Apim-Subscription-Key", @azure_translator_key}
     ])
