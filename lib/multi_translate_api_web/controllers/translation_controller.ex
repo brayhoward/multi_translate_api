@@ -18,6 +18,10 @@ defmodule MultiTranslateApiWeb.TranslationController do
     |> render_translations(translations)
   end
 
+  def iso_codes(conn, _params) do
+    conn |> json(@iso_codes)
+  end
+
   defp render_translations(conn, translations) do
     conn
     |> render(
@@ -26,16 +30,17 @@ defmodule MultiTranslateApiWeb.TranslationController do
     )
   end
 
-  def iso_codes(conn, _params) do
-    conn |> json(@iso_codes)
+  defp get_translations(text) do
+    @iso_codes
+    |> process_translations(text)
   end
-
-  def get_translations(text) do
-    @iso_codes |> Worker.translate(text)
-  end
-  def get_translations(text, iso_codes) do
+  defp get_translations(text, iso_codes) do
     iso_codes
     |> Jason.decode!()
-    |> Worker.translate(text)
+    |> process_translations(text)
+  end
+
+  defp process_translations(iso_codes, text) do
+    text |> Fetcher.fetch_translations(iso_codes)
   end
 end
