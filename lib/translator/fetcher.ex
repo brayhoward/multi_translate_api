@@ -1,4 +1,4 @@
-defmodule Translator.Client do
+defmodule Translator.Fetcher do
   import SweetXml
 
   @azure_translator_key (

@@ -1,9 +1,9 @@
 defmodule MultiTranslateApiWeb.TranslationController do
   use MultiTranslateApiWeb, :controller
 
-  alias Translator.{Client, Worker}
+  alias Translator.{Fetcher, Worker}
 
-  @iso_codes Client.iso_codes()
+  @iso_codes Fetcher.iso_codes()
 
   def translate(conn, %{"text" => text, "iso_codes" => iso_codes}) do
     translations = text |> get_translations(iso_codes)

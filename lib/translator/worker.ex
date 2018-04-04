@@ -1,7 +1,7 @@
 defmodule Translator.Worker do
   use GenServer
 
-  alias Translator.Client
+  alias Translator.Fetcher
 
   ###########################################################
   ##                      PUBLIC API                       ##
@@ -29,7 +29,7 @@ defmodule Translator.Worker do
   def handle_call(:get_state, _from, state), do: {:reply, state, state}
 
   def handle_cast({:get_translation, iso_code}, state) do
-    translation = Client.fetch_translation(state.text, iso_code);
+    translation = Fetcher.fetch_translation(state.text, iso_code);
     updated_state = state |> Map.update!(:translations, &([translation | &1]))
 
     {:noreply, updated_state}
