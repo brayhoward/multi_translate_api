@@ -1,9 +1,10 @@
 use Mix.Config
 
-secret_key_base = System.get_env("keyphrase")
-azure_translator_api_key = System.get_env("ivphrase")
+secret_key_base = System.get_env("secret_key_base")
+azure_translator_api_key = System.get_env("azure_translator_api_key")
+client_auth_key = System.get_env("client_auth_key")
 
-if !(secret_key_base && azure_translator_api_key) do
+if !(secret_key_base && azure_translator_api_key && client_auth_key) do
   throw("Must set secret_key_base and azure_translator_api_key environment variables in production!")
 end
 
@@ -16,7 +17,7 @@ config :multi_translate_api, MultiTranslateApiWeb.Endpoint,
   secret_key_base: secret_key_base
 
 config :multi_translate_api,
-  azure_translator_api_key: azu
+  azure_translator_api_key: azure_translator_api_key
 
 # Do not print debug messages in production
 config :logger, level: :info
