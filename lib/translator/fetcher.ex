@@ -29,6 +29,8 @@ defmodule Translator.Fetcher do
 
   def iso_codes, do: @iso_codes
 
+  def iso_table, do: @iso_table
+
   def fetch_translations(text, iso_codes) do
     iso_codes
     |> Task.async_stream(
@@ -55,21 +57,21 @@ defmodule Translator.Fetcher do
     |> build_translation(iso_code)
   end
 
-  def build_translation(translated_text, iso_code) do
+  defp build_translation(translated_text, iso_code) do
     lang = @iso_table |> Map.get(iso_code)
 
     %{text: translated_text, language: lang}
   end
 
-  def parse_resp_body("<html>" <> _rest) do
+  defp parse_resp_body("<html>" <> _rest) do
     "Error: could not translate"
   end
-  def parse_resp_body(response) do
+  defp parse_resp_body(response) do
     response
     |> xpath(~x"//string/text()"S)
   end
 
-  def build_query_url(text, iso_code) do
+  defp build_query_url(text, iso_code) do
     url = "https://api.microsofttranslator.com/V2/Http.svc/Translate"
     encodedText = URI.encode(text);
     query = "?text=#{encodedText}&to=#{iso_code}&from=en"

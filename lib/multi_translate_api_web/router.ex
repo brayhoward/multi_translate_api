@@ -12,6 +12,6 @@ defmodule MultiTranslateApiWeb.Router do
     # 1. text -> the string you want to translate
     # 2. iso_codes -> a json string array of iso_code strings. ex: "[\"ex\", \"ja\", \"zh\"]"
     get "/translate", TranslationController, :translate
-    get "/iso-codes", TranslationController, :iso_codes
+    get "/iso-table", TranslationController, :iso_table
   end
 end

@@ -5,6 +5,8 @@ defmodule MultiTranslateApiWeb.TranslationController do
 
   @iso_codes Fetcher.iso_codes()
 
+  @iso_table Fetcher.iso_table()
+
   def translate(conn, %{"text" => text, "iso_codes" => iso_codes}) do
     translations = text |> get_translations(iso_codes)
 
@@ -18,8 +20,8 @@ defmodule MultiTranslateApiWeb.TranslationController do
     |> render_translations(translations)
   end
 
-  def iso_codes(conn, _params) do
-    conn |> json(@iso_codes)
+  def iso_table(conn, _params) do
+    conn |> json(%{data: @iso_table})
   end
 
   defp render_translations(conn, translations) do
