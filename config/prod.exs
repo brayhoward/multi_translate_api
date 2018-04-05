@@ -10,8 +10,12 @@ end
 
 config :multi_translate_api, MultiTranslateApiWeb.Endpoint,
   load_from_system_env: true,
-  url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  url: [
+    scheme: "https",
+    host: "multi-translate-api.herokuapp.com",
+    port: 443
+  ],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]]
 
 config :multi_translate_api, MultiTranslateApiWeb.Endpoint,
   secret_key_base: secret_key_base
