@@ -45,7 +45,7 @@ defmodule Translator.Fetcher do
       end
     )
     |> Stream.reject(&(&1 === :error))
-    |> Enum.to_list()
+    |> order_translations_by_language()
     |> translations_length_or_error()
   end
 
@@ -80,6 +80,16 @@ defmodule Translator.Fetcher do
     query = "?text=#{encodedText}&to=#{iso_code}&from=en"
 
     url <> query
+  end
+
+  defp order_translations_by_language(translations) do
+    translations
+    |> Enum.sort(
+      # sort alphebetically
+      fn(%{language: l1}, %{language: l2}) ->
+        l1 < l2
+      end
+    )
   end
 
   defp translations_length_or_error(translations) do
