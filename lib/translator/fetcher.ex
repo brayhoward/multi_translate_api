@@ -66,7 +66,7 @@ defmodule Translator.Fetcher do
     %{text: translated_text, language: lang}
   end
 
-  defp parse_resp_body("<html>" <> _rest) do
+  defp parse_resp_body("<html>" <> _error_html) do
     :error
   end
   defp parse_resp_body(response) do

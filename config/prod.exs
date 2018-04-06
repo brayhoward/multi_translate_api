@@ -19,7 +19,8 @@ config :multi_translate_api, MultiTranslateApiWeb.Endpoint,
   secret_key_base: secret_key_base
 
 config :multi_translate_api,
-  azure_translator_api_key: azure_translator_api_key
+  azure_translator_api_key: azure_translator_api_key,
+  client_auth_key: client_auth_key
 
 # Do not print debug messages in production
 config :logger, level: :info

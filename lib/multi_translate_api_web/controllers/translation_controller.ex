@@ -5,7 +5,6 @@ defmodule MultiTranslateApiWeb.TranslationController do
   alias Translator.{Fetcher, Worker}
 
   @iso_codes Fetcher.iso_codes()
-
   @iso_table Fetcher.iso_table()
 
   def translate(conn, %{"text" => text} = params) do
