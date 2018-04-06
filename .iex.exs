@@ -1,6 +1,6 @@
-alias Translator.{Worker, Client}
+alias Translator.{Worker, Fetcher}
 
 alias Worker, as: W
-alias Client, as: C
+alias Fetcher, as: F
 alias MultiTranslateApiWeb.TranslationController, as: TC
 alias Benchmarking, as: B

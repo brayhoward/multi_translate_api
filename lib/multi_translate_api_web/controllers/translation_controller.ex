@@ -1,23 +1,25 @@
 defmodule MultiTranslateApiWeb.TranslationController do
   use MultiTranslateApiWeb, :controller
 
+  alias MultiTranslateApiWeb.ErrorView
   alias Translator.{Fetcher, Worker}
 
   @iso_codes Fetcher.iso_codes()
 
   @iso_table Fetcher.iso_table()
 
-  def translate(conn, %{"text" => text, "iso_codes" => iso_codes}) do
-    translations = text |> get_translations(iso_codes)
+  def translate(conn, %{"text" => text} = params) do
+    codes = params["iso_codes"]
 
-    conn
-    |> render_translations(translations)
-  end
-  def translate(conn, %{"text" => text}) do
-    translations = text |> get_translations()
+    case text |> get_translations(codes) do
+      :error ->
+        conn
+        |> put_status(500)
+        |> render(ErrorView, "500.json")
 
-    conn
-    |> render_translations(translations)
+      translations ->
+        conn |> render_translations(translations)
+    end
   end
 
   def iso_table(conn, _params) do
@@ -32,7 +34,8 @@ defmodule MultiTranslateApiWeb.TranslationController do
     )
   end
 
-  defp get_translations(text) do
+  defp get_translations(text, "[]"), do: []
+  defp get_translations(text, nil) do
     @iso_codes
     |> process_translations(text)
   end

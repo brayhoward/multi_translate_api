@@ -6,25 +6,26 @@ defmodule Translator.Fetcher do
     |> Application.get_env(:azure_translator_api_key)
   )
   @iso_table %{
-    "es" => "Spanish",
-    "zh" => "Chinese",
-    "ja" => "Japanese",
     "ar" => "Arabic",
-    "hi" => "Hindi",
-    "pt" => "Portuguese",
-    "ru" => "Russian",
     "bn" => "Bengali",
-    "de" => "German",
-    "id" => "Italian",
-    "ms" => "Malay",
-    "vi" => "Vietnamese",
-    "ko" => "Korean",
+    "zh" => "Chinese",
+    "nl" => "Dutch",
     "fr" => "French",
-    "tr" => "Turkish",
+    "de" => "German",
+    "hi" => "Hindi",
+    "id" => "Italian",
+    "ja" => "Japanese",
+    "ko" => "Korean",
+    "ms" => "Malay",
     "fa" => "Persian",
     "pl" => "Polish",
-    "nl" => "Dutch"
+    "pt" => "Portuguese",
+    "ru" => "Russian",
+    "es" => "Spanish",
+    "tr" => "Turkish",
+    "vi" => "Vietnamese"
   }
+
   @iso_codes Map.keys(@iso_table)
 
   def iso_codes, do: @iso_codes
@@ -36,15 +37,16 @@ defmodule Translator.Fetcher do
     |> Task.async_stream(
       fn(iso_code) ->
         fetch_translation(text, iso_code)
-      end,
-      ordered: false
+      end
     )
     |> Stream.map(
       fn({_ok, translation}) ->
         translation
       end
     )
+    |> Stream.reject(&(&1 === :error))
     |> Enum.to_list()
+    |> translations_length_or_error()
   end
 
   def fetch_translation(text, iso_code) do
@@ -57,6 +59,7 @@ defmodule Translator.Fetcher do
     |> build_translation(iso_code)
   end
 
+  defp build_translation(:error, _iso_codes), do: :error
   defp build_translation(translated_text, iso_code) do
     lang = @iso_table |> Map.get(iso_code)
 
@@ -64,7 +67,7 @@ defmodule Translator.Fetcher do
   end
 
   defp parse_resp_body("<html>" <> _rest) do
-    "Error: could not translate"
+    :error
   end
   defp parse_resp_body(response) do
     response
@@ -79,4 +82,11 @@ defmodule Translator.Fetcher do
     url <> query
   end
 
+  defp translations_length_or_error(translations) do
+    if length(translations) > 0 do
+      translations
+    else
+      :error
+    end
+  end
 end
