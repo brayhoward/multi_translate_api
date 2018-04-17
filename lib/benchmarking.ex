@@ -12,10 +12,25 @@ defmodule Benchmarking do
   @text "Hello, can you help me figure out which implementaion is faster?"
 
   def run do
+    :normal_load   |> run()
+    :inflated_load |> run()
+  end
+  def run(:normal_load) do
+    IO.puts "NORMAL LOAD"
+    run_with(@iso_codes)
+    IO.puts "\n\n"
+  end
+  def run(:inflated_load) do
+    IO.puts "INFLATED LOAD"
+    run_with(@inflated_iso_codes)
+    IO.puts "\n\n"
+  end
+
+  defp run_with(iso_codes) do
     Benchee.run(
       %{
         "genserver_implementation" => fn ->
-          @inflated_iso_codes
+          iso_codes
           |> Worker.translate(@text)
         end,
         "task_async_stream_implementaion" => fn ->
@@ -25,5 +40,6 @@ defmodule Benchmarking do
       },
       time: 10
     )
+    :ok
   end
 end
