@@ -37,7 +37,8 @@ defmodule Translator.Fetcher do
     |> Task.async_stream(
       fn(iso_code) ->
         fetch_translation(text, iso_code)
-      end
+      end,
+      timeout: 5_000
     )
     |> Stream.map(
       fn({_ok, translation}) ->

@@ -45,6 +45,7 @@ defmodule MultiTranslateApiWeb.TranslationController do
   end
 
   defp process_translations(iso_codes, text) do
-    text |> Fetcher.fetch_translations(iso_codes)
+    # text |> Fetcher.fetch_translations(iso_codes)
+    iso_codes |> Worker.translate(text)
   end
 end

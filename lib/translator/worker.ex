@@ -1,7 +1,7 @@
 defmodule Translator.Worker do
   use GenServer
 
-  alias Translator.Fetcher
+  alias Translator.{Server, Fetcher}
 
   @call_timeout (
     if Mix.env() == :dev do
@@ -15,29 +15,35 @@ defmodule Translator.Worker do
   ##                      PUBLIC API                       ##
   ###########################################################
   def translate(iso_codes, text) do
-    initial_state = %{
-      text: text,
+    state = %{
       iso_codes_length: length(iso_codes),
       translations: []
     }
-    :ok = GenServer.call(__MODULE__, {:set_state, initial_state}, @call_timeout)
+    :ok = set_state(state)
 
     iso_codes
-    |> Enum.each(&(GenServer.cast(__MODULE__, {:get_translation, &1})))
+    |> Enum.each(&(
+      Server.translate_text(text, &1)
+    ))
 
     get_translations()
   end
+
+  def receive_translation(translation) do
+    GenServer.cast(__MODULE__, {:receive_translation, translation})
+  end
   ###########################################################
 
-  def start_link() do
+  def start_link do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
-  def handle_call({:set_state, new_state}, _from, _state), do: {:reply, :ok, new_state}
   def handle_call(:get_state, _from, state), do: {:reply, state, state}
 
-  def handle_cast({:get_translation, iso_code}, state) do
-    translation = Fetcher.fetch_translation(state.text, iso_code);
+  def handle_cast({:set_state, new_state}, _state) do
+    {:noreply, new_state}
+  end
+  def handle_cast({:receive_translation, translation}, state) do
     updated_state = state |> Map.update!(:translations, &([translation | &1]))
 
     {:noreply, updated_state}
@@ -48,14 +54,14 @@ defmodule Translator.Worker do
   ###########################################################
   defp get_translations() do
     %{iso_codes_length: iso_codes_length, translations: translations} = get_state()
-    all_translations_fetched = iso_codes_length === length(translations)
+    all_translations_fetched? = iso_codes_length === length(translations)
 
-    if all_translations_fetched do
+    if all_translations_fetched? do
       translations
     else
       get_translations()
     end
   end
-
-  defp get_state(), do: GenServer.call(__MODULE__, :get_state, @call_timeout)
+  defp set_state(state), do: GenServer.cast(__MODULE__, {:set_state, state})
+  defp get_state, do: GenServer.call(__MODULE__, :get_state, @call_timeout)
 end
